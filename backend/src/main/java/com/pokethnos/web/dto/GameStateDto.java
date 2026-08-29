@@ -23,6 +23,7 @@ public class GameStateDto {
     public List<CardDto> tableCards;
     public List<CardDto> hand;   // mão do jogador da vez
     public List<CardDto> band;   // bando em formação
+    public List<BandDto> currentPlayerBands; // equipes que ele já formou nesta Era
 
     public boolean secondBand;
     public boolean lutadorEvolvedSecondBand;

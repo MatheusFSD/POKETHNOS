@@ -1,5 +1,6 @@
 package com.pokethnos.web;
 
+import com.pokethnos.domain.Bando;
 import com.pokethnos.domain.Carta;
 import com.pokethnos.domain.CartaDragao;
 import com.pokethnos.domain.CartaPokemon;
@@ -55,7 +56,22 @@ public class GameStateMapper {
         dto.deckCount = jogo.deck().size();
         dto.tableCards = jogo.tableCards().stream().map(this::cardDto).toList();
         dto.hand = current.getMao().stream().map(c -> (CardDto) cardDto(c)).toList();
-        dto.band = jogo.getBandoAtual().getCartas().stream().map(c -> (CardDto) cardDto(c)).toList();
+        /*
+         * O "Bando em formação" só existe enquanto ele está sendo montado ou
+         * o Líder sendo escolhido.
+         *
+         * Depois de jogado, o bando permanece em `bandoAtual` porque o motor
+         * ainda o consulta para retomar decisões pendentes (ver
+         * requireLeaderInBand). Expor isso fazia as cartas reaparecerem na
+         * área de formação logo depois de voarem para a Região — visível
+         * sobretudo no Golpe Duplo, cujo modal segura a tela nesse intervalo.
+         */
+        boolean formingBand = jogo.getTurnState() == GerenciadorJogo.TurnState.BUILDING_BAND
+                || jogo.getPendingDecision() == PendingDecision.CHOOSE_LEADER
+                || jogo.getPendingDecision() == PendingDecision.CHOOSE_LEADER_SECOND;
+        dto.band = formingBand
+                ? jogo.getBandoAtual().getCartas().stream().map(c -> (CardDto) cardDto(c)).toList()
+                : List.of();
 
         dto.regions = jogo.getTabuleiro().getRegioes().stream().map(r -> regionDto(jogo, r)).toList();
         dto.players = jogo.getJogadores().stream().map(p -> playerDto(jogo, p)).toList();
@@ -70,6 +86,7 @@ public class GameStateMapper {
         dto.statusMessage = statusMessage(jogo);
         dto.pendingDecision = pendingDecisionDto(jogo);
         dto.turnSummary = turnSummaryDto(jogo.getTurnSummary());
+        dto.currentPlayerBands = current.getBandos().stream().map(this::bandDto).toList();
 
         if (jogo.getPhase() == GerenciadorJogo.Phase.SCORING && jogo.getLastEraSummary() != null) {
             dto.eraSummary = eraSummaryDto(jogo, jogo.getLastEraSummary());
@@ -92,13 +109,15 @@ public class GameStateMapper {
         dto.fromDeck = s.fromDeck;
         dto.gainedCard = s.gainedCard != null ? cardDto(s.gainedCard) : null;
         dto.hand = s.hand.stream().map(c -> (CardDto) cardDto(c)).toList();
-        dto.bands = s.bands.stream().map(b -> {
-            BandDto bd = new BandDto();
-            bd.cards = b.getCartas().stream().map(c -> (CardDto) cardDto(c)).toList();
-            bd.leaderId = b.lider() != null ? b.lider().getId() : null;
-            bd.leaderName = b.lider() != null ? b.lider().getNome() : null;
-            return bd;
-        }).toList();
+        dto.bands = s.bands.stream().map(this::bandDto).toList();
+        return dto;
+    }
+
+    private BandDto bandDto(Bando b) {
+        BandDto dto = new BandDto();
+        dto.cards = b.getCartas().stream().map(c -> (CardDto) cardDto(c)).toList();
+        dto.leaderId = b.lider() != null ? b.lider().getId() : null;
+        dto.leaderName = b.lider() != null ? b.lider().getNome() : null;
         return dto;
     }
 

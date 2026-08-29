@@ -1,9 +1,13 @@
-export default function RightPanel({ state, actions }) {
+/** Ações do turno. Saiu do painel lateral para ficar ao lado da mão, que é
+ *  onde o jogador está olhando na hora de decidir. */
+export default function Actions({ state, actions, frozen }) {
   const p = state.players.find((pl) => pl.id === state.currentPlayerId);
-  const noDecision = !state.pendingDecision;
+  // `frozen`: o turno acabou e o resumo está aberto — oferecer ações aqui
+  // seria oferecê-las em nome do jogador errado
+  const noDecision = !state.pendingDecision && !frozen;
 
   return (
-    <div className="right-panel">
+    <div className="hand-actions">
       <div className="panel-section">
         <h4>AÇÕES</h4>
         <div className="status-msg">{state.statusMessage}</div>
@@ -26,15 +30,6 @@ export default function RightPanel({ state, actions }) {
               <button className="btn-action danger" onClick={actions.cancelBand}>✖ Cancelar</button>
             </>
           )}
-        </div>
-      </div>
-
-      <div className="panel-section">
-        <h4>REGISTRO</h4>
-        <div className="log-section">
-          {[...state.log].reverse().map((l, i) => (
-            <div className="log-entry" key={i}>{l}</div>
-          ))}
         </div>
       </div>
     </div>

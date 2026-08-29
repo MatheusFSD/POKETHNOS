@@ -100,13 +100,13 @@ export function useGame() {
       removeFromBand: (cardId) => run(() => api.removeFromBand(id(), cardId)),
       cancelBand: () => run(() => api.cancelBand(id())),
       playBand: () => run(() => api.playBand(id())),
-      chooseLeader: (cardId) => run(() => api.chooseLeader(id(), cardId)),
+      chooseLeader: (cardId, gate) => run(() => api.chooseLeader(id(), cardId), gate),
       chooseFlyRegion: (regionId) => run(() => api.chooseFlyRegion(id(), regionId)),
       choosePoisonCards: (cardIds) => run(() => api.choosePoisonCards(id(), cardIds)),
       chooseFadaCards: (cardIds) => run(() => api.chooseFadaCards(id(), cardIds)),
       lutadorDecision: (accept) => run(() => api.lutadorDecision(id(), accept)),
       playSecondBand: () => run(() => api.playSecondBand(id())),
-      chooseLeaderSecond: (cardId) => run(() => api.chooseLeaderSecond(id(), cardId)),
+      chooseLeaderSecond: (cardId, gate) => run(() => api.chooseLeaderSecond(id(), cardId), gate),
       dismissError: () => setError(null),
       newGame: () => {
         gameIdRef.current = null;

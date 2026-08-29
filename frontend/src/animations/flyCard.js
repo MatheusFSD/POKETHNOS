@@ -10,7 +10,7 @@
  * sem Web Animations, usuário pediu menos movimento), resolve na hora e o
  * jogo segue sem animação.
  */
-export function flyCard(sourceEl, targetEl, { duration = 480 } = {}) {
+export function flyCard(sourceEl, targetEl, { duration = 480, delay = 0 } = {}) {
   if (!sourceEl || !targetEl || typeof sourceEl.animate !== 'function') {
     return Promise.resolve();
   }
@@ -52,7 +52,7 @@ export function flyCard(sourceEl, targetEl, { duration = 480 } = {}) {
       },
       { transform: `translate(${dx}px, ${dy}px) scale(0.88) rotate(0deg)`, opacity: 0.9 },
     ],
-    { duration, easing: 'cubic-bezier(0.34, 0.75, 0.35, 1)', fill: 'forwards' },
+    { duration, delay, easing: 'cubic-bezier(0.34, 0.75, 0.35, 1)', fill: 'forwards' },
   );
 
   const cleanup = () => {
@@ -68,4 +68,21 @@ export function flyCard(sourceEl, targetEl, { duration = 480 } = {}) {
 /** Destino padrão dos recrutamentos: a mão do jogador da vez. */
 export function handTarget() {
   return document.querySelector('.hand-cards') || document.querySelector('.hand-section');
+}
+
+/** O card daquela região no menu lateral — destino do Bando ao ser jogado. */
+export function regionTarget(regionId) {
+  return document.querySelector(`.region-card[data-region="${regionId}"]`);
+}
+
+/**
+ * Várias cartas voando para o mesmo destino, em cascata.
+ * O atraso entre elas evita que virem um borrão só e dá a leitura de que
+ * é um Bando inteiro marchando para a Região.
+ */
+export function flyCards(sourceEls, targetEl, { duration = 520, stagger = 70 } = {}) {
+  if (!sourceEls || sourceEls.length === 0 || !targetEl) return Promise.resolve();
+  return Promise.all(
+    sourceEls.map((el, i) => flyCard(el, targetEl, { duration, delay: i * stagger })),
+  );
 }
