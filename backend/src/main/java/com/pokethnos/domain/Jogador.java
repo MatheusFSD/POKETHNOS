@@ -13,12 +13,22 @@ public class Jogador {
     private List<CartaPokemon> mao = new ArrayList<>();
     private List<Bando> bandos = new ArrayList<>();
     private int pontosTotais = 0;
+    /** Índice do treinador na prancha de sprites (0-5). */
+    private int avatar = 0;
     private final Map<String, MarcadorRegiao> marcadores = new LinkedHashMap<>();
 
     public Jogador(int id, String nome, String cor) {
         this.id = id;
         this.nome = nome;
         this.cor = cor;
+    }
+
+    public int getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(int avatar) {
+        this.avatar = avatar;
     }
 
     public int getId() {

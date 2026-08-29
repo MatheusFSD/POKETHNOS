@@ -1,4 +1,5 @@
 import Card from './Card.jsx';
+import TrainerAvatar from './TrainerAvatar.jsx';
 
 export default function HandAndBand({ state, actions }) {
   const canEditBand = !state.pendingDecision && state.turnState === 'BUILDING_BAND';
@@ -36,15 +37,31 @@ export default function HandAndBand({ state, actions }) {
       )}
 
       <div className="hand-section">
-        <div className="hand-label">MÃO DE {state.currentPlayerName?.toUpperCase()} ({p ? p.handCount : 0}/10)</div>
-        <div className="hand-cards">
-          {state.hand.map((c) => (
-            <Card
-              key={c.id}
-              card={c}
-              onClick={canEditBand ? () => actions.addToBand(c.id) : undefined}
-            />
-          ))}
+        {/* o dono da mão, à esquerda das cartas que ele está segurando */}
+        <div className="hand-player">
+          <TrainerAvatar
+            index={state.currentPlayerAvatar}
+            size={300}
+            className="hand-player-art"
+          />
+          <span className="hand-player-tag" style={{ '--pcolor': state.currentPlayerColor }}>
+            {state.currentPlayerName}
+          </span>
+          <span className="hand-player-glory">{p ? p.glory : 0} ✦</span>
+        </div>
+
+        <div className="hand-main">
+          <div className="hand-label">MÃO ({p ? p.handCount : 0}/10)</div>
+          <div className="hand-cards" style={{ '--n': state.hand.length }}>
+            {state.hand.map((c, i) => (
+              <div className="hand-slot" key={c.id} style={{ '--i': i }}>
+                <Card
+                  card={c}
+                  onClick={canEditBand ? () => actions.addToBand(c.id) : undefined}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -5,17 +5,8 @@ export default function RightPanel({ state, actions }) {
   return (
     <div className="right-panel">
       <div className="panel-section">
-        <h4>VEZ DE</h4>
-        <div className="current-player-name">
-          <span className="color-dot" style={{ background: state.currentPlayerColor }} />
-          {state.currentPlayerName}
-        </div>
-        <div className="current-player-glory">{p ? p.glory : 0} Glória ✦</div>
-        <div className="status-msg">{state.statusMessage}</div>
-      </div>
-
-      <div className="panel-section">
         <h4>AÇÕES</h4>
+        <div className="status-msg">{state.statusMessage}</div>
         <div className="action-btns">
           {noDecision && state.turnState === 'CHOOSE' && (
             <>
@@ -35,20 +26,6 @@ export default function RightPanel({ state, actions }) {
               <button className="btn-action danger" onClick={actions.cancelBand}>✖ Cancelar</button>
             </>
           )}
-        </div>
-      </div>
-
-      <div className="panel-section">
-        <h4>JOGADORES</h4>
-        <div className="players-list">
-          {state.players.map((pl) => (
-            <div className={`player-row${pl.id === state.currentPlayerId ? ' active-player' : ''}`} key={pl.id}>
-              <div className="color-dot" style={{ background: pl.color }} />
-              <div className="pname">{pl.name}{pl.id === state.currentPlayerId ? ' ◀' : ''}</div>
-              <div className="pglory">{pl.glory}✦</div>
-              <div className="pmarkers">[{pl.totalMarkers}🏴]</div>
-            </div>
-          ))}
         </div>
       </div>
 

@@ -1,3 +1,5 @@
+import TrainerAvatar from './TrainerAvatar.jsx';
+
 export default function TopBar({ state }) {
   const pips = [0, 1, 2].map((i) => {
     const seen = state.dragonsSeen.find((d) => d.revealOrder === i);
@@ -7,7 +9,8 @@ export default function TopBar({ state }) {
 
   return (
     <div className="top-bar">
-      <div className="top-bar-title">◆ POKÉTHNOS</div>
+      <div className="top-bar-title">POKÉTHNOS</div>
+
       <div className="era-info">
         <div className="era-badge">Era {state.era} / {state.totalEras}</div>
         <div>
@@ -20,14 +23,24 @@ export default function TopBar({ state }) {
             ))}
           </div>
         </div>
-        <div className="glory-track">
-          {state.players.map((p) => (
-            <div className="glory-chip" key={p.id}>
-              <div className="pcolor" style={{ background: p.color }} />
-              <span>{p.name.split(' ')[0]}: {p.glory}✦</span>
+      </div>
+
+      {/* placar único da partida: quem joga, glória e marcadores de cada um */}
+      <div className="glory-track">
+        {state.players.map((p) => {
+          const isCurrent = p.id === state.currentPlayerId;
+          return (
+            <div className={`glory-chip${isCurrent ? ' active' : ''}`} key={p.id}>
+              <span className="avatar-ring sm" style={{ "--pcolor": p.color }}>
+                <TrainerAvatar index={p.avatar} size={26} />
+              </span>
+              <span className="gc-name">{p.name.split(' ')[0]}</span>
+              <span className="gc-glory">{p.glory}✦</span>
+              <span className="gc-markers">{p.totalMarkers}🏴</span>
+              {isCurrent && <span className="gc-turn">VEZ</span>}
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
   );

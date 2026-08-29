@@ -17,6 +17,7 @@ public class GameStateDto {
     public int currentPlayerId;
     public String currentPlayerName;
     public String currentPlayerColor;
+    public int currentPlayerAvatar;
 
     public int deckCount;
     public List<CardDto> tableCards;
@@ -32,6 +33,8 @@ public class GameStateDto {
     public List<String> log;
 
     public PendingDecisionDto pendingDecision; // null quando não há decisão pendente
+
+    public TurnSummaryDto turnSummary;         // retrato do jogador que acabou de agir
 
     public EraSummaryDto eraSummary;           // preenchido quando phase == SCORING
     public List<FinalStandingDto> finalStandings; // preenchido quando phase == GAME_OVER
