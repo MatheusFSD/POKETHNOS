@@ -5,6 +5,7 @@ import com.pokethnos.domain.Carta;
 import com.pokethnos.domain.CartaDragao;
 import com.pokethnos.domain.CartaPokemon;
 import com.pokethnos.domain.Jogador;
+import com.pokethnos.domain.MarcadorColocado;
 import com.pokethnos.domain.Regiao;
 import com.pokethnos.domain.Tabuleiro;
 import com.pokethnos.engine.GameData;
@@ -458,6 +459,7 @@ public class GameService {
         boolean canPlace = effectiveBandSize > p.getMarcadores(leaderRegion);
         if (canPlace) {
             p.adicionarMarcador(leaderRegion);
+            registrarProcedencia(jogo, p, leaderRegion);
             jogo.log(p.getNome() + " (2°Bando) colocou marcador em " + regionName(jogo, leaderRegion) + ".");
         }
         jogo.log(p.getNome() + " jogou 2° Bando de " + bandSize + " carta(s).");
@@ -611,9 +613,23 @@ public class GameService {
         return size;
     }
 
+    /**
+     * Guarda qual Bando plantou o marcador. Os dois pontos de colocação
+     * acontecem logo depois de jogarBando(), então o Bando de origem é sempre
+     * o último da lista do jogador.
+     */
+    private void registrarProcedencia(GerenciadorJogo jogo, Jogador p, String regionId) {
+        List<Bando> bandos = p.getBandos();
+        if (bandos.isEmpty()) return;
+        Bando b = bandos.get(bandos.size() - 1);
+        p.getMarcadoresColocados().add(
+                new MarcadorColocado(regionId, jogo.getEra(), b.getCartas(), b.lider()));
+    }
+
     private void placeMarkerIfChosen(GerenciadorJogo jogo, Jogador p, String regionId) {
         if (regionId != null) {
             p.adicionarMarcador(regionId);
+            registrarProcedencia(jogo, p, regionId);
             jogo.log(p.getNome() + " colocou marcador em " + regionName(jogo, regionId) + ".");
         } else {
             jogo.log(p.getNome() + " não colocou marcador.");

@@ -1,24 +1,26 @@
-/** Ações do turno. Saiu do painel lateral para ficar ao lado da mão, que é
- *  onde o jogador está olhando na hora de decidir. */
+/** Ações do turno, ao lado da mão — que é onde o jogador está olhando. */
 export default function Actions({ state, actions, frozen }) {
   const p = state.players.find((pl) => pl.id === state.currentPlayerId);
-  // `frozen`: o turno acabou e o resumo está aberto — oferecer ações aqui
-  // seria oferecê-las em nome do jogador errado
-  const noDecision = !state.pendingDecision && !frozen;
+  const livre = !state.pendingDecision && !frozen;
+  const montando = livre && state.turnState === 'BUILDING_BAND';
+  const podeIniciar = livre && state.turnState === 'CHOOSE';
 
   return (
     <div className="hand-actions">
       <div className="panel-section">
-        <h4>AÇÕES</h4>
-        <div className="status-msg">{state.statusMessage}</div>
         <div className="action-btns">
-          {noDecision && state.turnState === 'CHOOSE' && (
+          {podeIniciar && (
             <>
-              {p && p.handCount >= 10 && <div className="note">Mão cheia (10 cartas)! Você deve jogar um Bando.</div>}
-              <button className="btn-action" onClick={actions.startBand}>⚔ Formar Bando de Aliados</button>
+              <button className="btn-action" onClick={actions.startBand}>
+                ⚔ Formar Bando de Aliados
+              </button>
+              {p && p.handCount >= 10 && (
+                <div className="note note-bad">Mão cheia (10 cartas)! Você deve jogar um Bando.</div>
+              )}
             </>
           )}
-          {noDecision && state.turnState === 'BUILDING_BAND' && (
+
+          {montando && (
             <>
               <button
                 className="btn-action confirm"

@@ -229,19 +229,19 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 
 .main-area {
   display: grid; grid-template-columns: 1fr 320px; gap: 18px;
-  padding: 20px 22px; align-items: start;
+  padding: 14px 22px; align-items: start;
 }
 .board-area { min-width: 0; }
 
 .section-title {
-  font-size: 0.92rem; color: var(--blue); letter-spacing: 0.5px; margin-bottom: 10px;
+  font-size: 0.92rem; color: var(--blue); letter-spacing: 0.5px; margin-bottom: 6px;
   display: flex; align-items: center; gap: 8px;
 }
 .section-title::before {
   content: ''; width: 8px; height: 18px; border-radius: 4px;
   background: var(--red); flex-shrink: 0;
 }
-.mt8 { margin-top: 18px; }
+.mt8 { margin-top: 10px; }
 
 /* ═══════════════════════ REGIÕES ═══════════════════════ */
 /* cartões brancos com "tarja de tipo" no topo, como um Pokédex */
@@ -297,14 +297,14 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 /* A perspectiva aproxima a borda de baixo da mesa, e ela renderiza ~3% mais
    larga que a caixa de layout. O respiro lateral é o que impede essa sobra
    de ser cortada pelo `overflow-x: hidden` da coluna rolável. */
-.table-stage { perspective: var(--table-depth); padding: 6px 26px 26px; }
+.table-stage { perspective: var(--table-depth); padding: 4px 26px 14px; }
 
 .table-surface {
   position: relative;
   transform: rotateX(var(--table-tilt));
   transform-style: preserve-3d;
   border-radius: 18px;
-  padding: 26px 24px;
+  padding: 16px 24px;
   border: 4px solid #fff;
   background:
     radial-gradient(ellipse 130% 90% at 50% 0%, rgba(255, 255, 255, 0.22), transparent 60%),
@@ -461,7 +461,7 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
   --overlap: clamp(0.42, calc(0.42 + (var(--n, 5) - 4) * 0.05), 0.72);
   --fan: clamp(2deg, calc(6.4deg - var(--n, 5) * 0.44deg), 5deg);
   display: flex; flex-wrap: nowrap; gap: 0;
-  justify-content: flex-start; padding: 36px 0 16px 26px;
+  justify-content: flex-start; padding: 30px 0 8px 26px;
 }
 .hand-slot {
   --mid: calc((var(--n) - 1) / 2);
@@ -1040,8 +1040,8 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 .band-slot {
   background: var(--panel);
   border: 3px dashed var(--line);
-  border-radius: 18px; padding: 12px 14px;
-  min-height: 96px;
+  border-radius: 18px; padding: 10px 14px;
+  min-height: 0;
   transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 /* montando um Bando: a faixa se destaca do estado de repouso */
@@ -1055,19 +1055,67 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
   box-shadow: 0 0 0 5px rgba(46, 158, 82, 0.2), var(--shadow-md);
 }
 
-/* ── equipes já formadas ── */
-/* cartas menores: aqui elas são registro, não algo para manusear */
-.teams-row { display: flex; gap: 14px; flex-wrap: wrap; }
-.team {
-  --card-w: 54px; --card-h: 76px;
-  background: var(--panel-2); border-radius: 12px; padding: 8px 10px;
+
+/* ═══════════ BALÃO DO MARCADOR ═══════════ */
+.control-markers .marker {
+  cursor: help; position: relative;
+  transition: transform 0.12s ease;
 }
-.team-cards { display: flex; gap: 4px; }
-.team-cards .card { border-width: 2px; border-radius: 8px; box-shadow: none; }
-.team-cards .card-name-overlay, .team-cards .card-evo-badge { display: none; }
-.team-cards .card-badge { font-size: 0.6rem; padding: 0 3px; }
-.team-cards .card-crown { font-size: 0.7rem; }
-.team-label {
-  font-size: 0.66rem; color: var(--ink-soft); font-weight: 800;
-  text-align: center; margin-top: 5px;
+/* alvo de mouse maior que a bolinha: 11px é pequeno demais para acertar,
+   e o pseudo-elemento cresce a área sem mudar o desenho */
+.control-markers .marker::before {
+  content: ''; position: absolute; inset: -7px; border-radius: 50%;
 }
+.control-markers .marker:hover { transform: scale(1.6); }
+
+/* fixed para escapar do overflow:hidden do card da região */
+.marker-tip {
+  position: fixed; z-index: 620;
+  transform: translate(-50%, calc(-100% - 12px));
+  pointer-events: none;
+  background: var(--panel);
+  border: 3px solid var(--blue);
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-lg);
+  animation: tip-in 0.14s ease-out;
+  max-width: 320px;
+}
+@keyframes tip-in {
+  from { opacity: 0; transform: translate(-50%, calc(-100% - 4px)); }
+  to   { opacity: 1; transform: translate(-50%, calc(-100% - 12px)); }
+}
+/* bico apontando para a bolinha */
+.marker-tip::after {
+  content: ''; position: absolute; left: 50%; bottom: -11px;
+  width: 16px; height: 16px; background: var(--panel);
+  border-right: 3px solid var(--blue); border-bottom: 3px solid var(--blue);
+  transform: translateX(-50%) rotate(45deg);
+  border-bottom-right-radius: 4px;
+}
+
+.marker-tip-who { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.marker-tip-name {
+  background: var(--pcolor, var(--ink-soft)); color: #fff;
+  font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 0.9rem;
+  padding: 3px 13px; border-radius: 999px;
+}
+/* cartas em miniatura: aqui elas são registro, como nas equipes */
+.marker-tip-cards {
+  --card-w: 50px; --card-h: 70px;
+  display: flex; gap: 4px; flex-wrap: wrap;
+}
+.marker-tip-cards .card { border-width: 2px; border-radius: 8px; box-shadow: none; }
+.marker-tip-cards .card-name-overlay, .marker-tip-cards .card-evo-badge { display: none; }
+.marker-tip-cards .card-badge { font-size: 0.58rem; padding: 0 3px; }
+.marker-tip-cards .card-crown { font-size: 0.68rem; }
+.marker-tip-foot {
+  margin-top: 9px; font-size: 0.7rem; color: var(--ink-soft);
+  font-weight: 700; line-height: 1.3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker-tip { animation: none; }
+  .control-markers .marker:hover { transform: none; }
+}
+

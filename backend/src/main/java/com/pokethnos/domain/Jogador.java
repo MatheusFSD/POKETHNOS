@@ -12,6 +12,9 @@ public class Jogador {
     private final String cor;
     private List<CartaPokemon> mao = new ArrayList<>();
     private List<Bando> bandos = new ArrayList<>();
+    /** Marcadores plantados, com o Bando de origem. Sobrevive à troca de Era,
+     *  ao contrário de bandos. */
+    private final List<MarcadorColocado> marcadoresColocados = new ArrayList<>();
     private int pontosTotais = 0;
     /** Índice do treinador na prancha de sprites (0-5). */
     private int avatar = 0;
@@ -49,6 +52,10 @@ public class Jogador {
 
     public void setMao(List<CartaPokemon> mao) {
         this.mao = mao;
+    }
+
+    public List<MarcadorColocado> getMarcadoresColocados() {
+        return marcadoresColocados;
     }
 
     public List<Bando> getBandos() {

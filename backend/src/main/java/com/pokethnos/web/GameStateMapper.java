@@ -5,6 +5,7 @@ import com.pokethnos.domain.Carta;
 import com.pokethnos.domain.CartaDragao;
 import com.pokethnos.domain.CartaPokemon;
 import com.pokethnos.domain.Jogador;
+import com.pokethnos.domain.MarcadorColocado;
 import com.pokethnos.domain.Regiao;
 import com.pokethnos.engine.EraSummary;
 import com.pokethnos.engine.GameData;
@@ -18,6 +19,7 @@ import com.pokethnos.web.dto.DragonDto;
 import com.pokethnos.web.dto.EraSummaryDto;
 import com.pokethnos.web.dto.FinalStandingDto;
 import com.pokethnos.web.dto.GameStateDto;
+import com.pokethnos.web.dto.MarkerDto;
 import com.pokethnos.web.dto.PendingDecisionDto;
 import com.pokethnos.web.dto.PlayerDto;
 import com.pokethnos.web.dto.RegionDto;
@@ -151,6 +153,24 @@ public class GameStateMapper {
         dto.tokens = r.tokens(jogo.isIs23());
         dto.markers = new java.util.LinkedHashMap<>();
         for (Jogador p : jogo.getJogadores()) dto.markers.put(p.getId(), p.getMarcadores(r.getId()));
+
+        // um item por marcador, na ordem em que foram plantados
+        dto.markerList = new ArrayList<>();
+        for (Jogador p : jogo.getJogadores()) {
+            for (MarcadorColocado mc : p.getMarcadoresColocados()) {
+                if (!mc.getRegiaoId().equals(r.getId())) continue;
+                MarkerDto md = new MarkerDto();
+                md.playerId = p.getId();
+                md.playerName = p.getNome();
+                md.playerColor = p.getCor();
+                md.playerAvatar = p.getAvatar();
+                md.era = mc.getEra();
+                md.leaderId = mc.getLiderId();
+                md.leaderName = mc.getLiderNome();
+                md.cards = mc.getCartas().stream().map(c -> (CardDto) cardDto(c)).toList();
+                dto.markerList.add(md);
+            }
+        }
         return dto;
     }
 
