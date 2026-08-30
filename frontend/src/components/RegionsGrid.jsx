@@ -16,59 +16,95 @@ export default function RegionsGrid({ state }) {
 
   /* O balão é `position: fixed` porque o card da região tem `overflow:
      hidden` (para a paisagem respeitar os cantos arredondados) — dentro
-     dele, o balão seria decepado. */
-  function showTip(e, marker, regionName) {
+     dele, o balão seria decepado.
+     Como ele é centrado na bolinha, nas bordas da tela metade dele ficava
+     para fora. Aqui o centro é preso dentro da janela e o bico recebe, à
+     parte, a posição real da bolinha — senão apontaria para o vazio. */
+  const TIP_W = 360;
+  const TIP_H = 240;
+  const MARGEM = 10;
+
+  function showTip(e, marker) {
     const r = e.currentTarget.getBoundingClientRect();
-    setTip({ marker, regionName, x: r.left + r.width / 2, y: r.top });
+    const alvo = r.left + r.width / 2;
+    const min = TIP_W / 2 + MARGEM;
+    const max = window.innerWidth - TIP_W / 2 - MARGEM;
+    const x = Math.min(Math.max(alvo, min), Math.max(min, max));
+    // sem espaço acima, o balão vira para baixo da bolinha
+    const abaixo = r.top < TIP_H + MARGEM;
+    setTip({
+      marker,
+      x,
+      y: abaixo ? r.bottom : r.top,
+      abaixo,
+      seta: alvo - (x - TIP_W / 2), // posição do bico dentro do balão
+    });
   }
 
   return (
     <>
-      <div className="section-title">REGIÕES</div>
       <div className="regions-grid">
-        {state.regions.map((r) => (
-          <div className="region-card" key={r.id} data-region={r.id} style={{ '--region-color': r.color }}>
-            <div
-              className="region-banner"
-              style={BIOMAS[r.id] ? { backgroundImage: `url(${BIOMAS[r.id]})` } : undefined}
-            >
-              <span className="region-name">{r.name}</span>
-            </div>
+        {state.regions.map((r) => {
+          // quem está à frente nesta frente de batalha
+          const counts = state.players
+            .map((p) => ({ p, n: r.markers[p.id] || 0 }))
+            .filter((x) => x.n > 0);
+          const max = counts.length ? Math.max(...counts.map((x) => x.n)) : 0;
+          const leaders = counts.filter((x) => x.n === max);
 
-            <div className="region-body">
-              <div className="region-color-name">{r.id}</div>
-              <div className="glory-tokens">
-                {r.tokens.map((v, i) => (
-                  <div className="glory-token" key={i}>{v}</div>
-                ))}
+          return (
+            <div className="region-card" key={r.id} data-region={r.id} style={{ '--region-color': r.color }}>
+              <div
+                className="region-banner"
+                style={BIOMAS[r.id] ? { backgroundImage: `url(${BIOMAS[r.id]})` } : undefined}
+              >
+                <span className="region-name">{r.name}</span>
+
+                {leaders.length > 0 ? (
+                  <div className="region-lead" title={`${leaders.map((l) => l.p.name).join(' e ')} — ${max} marcador(es)`}>
+                    <span className="region-lead-crown">👑</span>
+                    {leaders.map((l) => (
+                      <span key={l.p.id} className="avatar-ring sm" style={{ '--pcolor': l.p.color }}>
+                        <TrainerAvatar index={l.p.avatar} size={26} face />
+                      </span>
+                    ))}
+                    <span className="region-lead-n">{max}</span>
+                  </div>
+                ) : (
+                  <span className="region-free">LIVRE</span>
+                )}
               </div>
-              <div className="control-markers">
-                {r.markerList
-                  ? r.markerList.map((m, i) => (
-                      <div
-                        className="marker"
-                        key={i}
-                        style={{ background: m.playerColor }}
-                        onMouseEnter={(e) => showTip(e, m, r.name)}
-                        onMouseLeave={() => setTip(null)}
-                      />
-                    ))
-                  : /* partida antiga, sem procedência: só as bolinhas */
-                    state.players.flatMap((p) =>
-                      Array.from({ length: r.markers[p.id] || 0 }, (_, i) => (
-                        <div className="marker" key={`${p.id}-${i}`} style={{ background: p.color }} />
-                      )),
-                    )}
+
+              <div className="region-body">
+                <div className="glory-tokens">
+                  {r.tokens.map((v, i) => (
+                    <div className="glory-token" key={i}>{v}</div>
+                  ))}
+                </div>
+                <div className="control-markers">
+                  {(r.markerList || []).map((m, i) => (
+                    <div
+                      className="marker"
+                      key={i}
+                      style={{ background: m.playerColor }}
+                      onMouseEnter={(e) => showTip(e, m)}
+                      onMouseLeave={() => setTip(null)}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {tip && (
-        <div className="marker-tip" style={{ left: tip.x, top: tip.y }}>
+        <div
+          className={`marker-tip${tip.abaixo ? ' below' : ''}`}
+          style={{ left: tip.x, top: tip.y, '--seta': `${tip.seta}px`, '--tip-w': `${TIP_W}px` }}
+        >
           <div className="marker-tip-who">
-            <TrainerAvatar index={tip.marker.playerAvatar} size={34} />
+            <TrainerAvatar index={tip.marker.playerAvatar} size={40} face />
             <span className="marker-tip-name" style={{ '--pcolor': tip.marker.playerColor }}>
               {tip.marker.playerName}
             </span>

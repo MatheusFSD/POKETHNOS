@@ -2,7 +2,6 @@ import { useState } from 'react';
 import TopBar from './TopBar.jsx';
 import RegionsGrid from './RegionsGrid.jsx';
 import TableCards from './TableCards.jsx';
-import Actions from './Actions.jsx';
 import HandAndBand from './HandAndBand.jsx';
 import DecisionModal from './modals/DecisionModal.jsx';
 import TurnSummaryModal from './modals/TurnSummaryModal.jsx';
@@ -48,25 +47,25 @@ export default function GameScreen({ state, actions, error }) {
   return (
     <div className="screen screen-game active">
       <div className="game-layout">
-        <TopBar state={view} />
+        <TopBar state={view} logCount={state.log.length} onOpenLog={() => setLogOpen(true)} />
 
+        {/* Coluna única: as Regiões são o tabuleiro, o recrutamento é uma
+            faixa, e a mão fica na base — de cima para baixo, o que está em
+            disputa, de onde vêm as tropas, e as suas. */}
         <div className="main-area">
-          {/* mesa e mão ocupam o topo da coluna principal */}
+          {/* Coluna principal: a mesa em cima, ocupando a altura que sobrar
+              (no fim de cada Era todas as mãos são descartadas nela), e a mão
+              com a formação do Bando embaixo. */}
           <div className="board-area">
             <TableCards state={view} actions={actions} canRecruit={canRecruit && !showSummary} />
-            <HandAndBand
-              state={view}
-              actions={actions}
-              aside={<Actions state={view} actions={actions} frozen={showSummary} />}
-            />
+
+            <HandAndBand state={view} actions={actions} frozen={showSummary} />
           </div>
 
-          {/* menu lateral: regiões e o acesso ao registro */}
+          {/* menu lateral fixo: as seis frentes em disputa */}
           <div className="side-panel">
+            <div className="section-title">REGIÕES EM DISPUTA</div>
             <RegionsGrid state={view} />
-            <button className="log-btn" onClick={() => setLogOpen(true)}>
-              📜 REGISTRO<span className="log-btn-count">{state.log.length}</span>
-            </button>
           </div>
         </div>
       </div>

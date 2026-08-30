@@ -21,7 +21,7 @@ export default function EndScreen({ state, onNewGame }) {
             <div className={`final-score-row${i === 0 ? ' winner-row' : ''}`} key={s.playerId}>
               <div className="fn">
                 <span className="avatar-ring sm" style={{ '--pcolor': s.color }}>
-                  <TrainerAvatar index={avatarOf(s.playerId)} size={30} />
+                  <TrainerAvatar index={avatarOf(s.playerId)} size={32} face />
                 </span>
                 {i === 0 ? '👑 ' : ''}{s.name}
               </div>

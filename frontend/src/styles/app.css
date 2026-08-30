@@ -228,7 +228,7 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 }
 
 .main-area {
-  display: grid; grid-template-columns: 1fr 320px; gap: 18px;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px;
   padding: 14px 22px; align-items: start;
 }
 .board-area { min-width: 0; }
@@ -447,7 +447,6 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 .band-cards { display: flex; gap: 10px; flex-wrap: wrap; }
 
 /* ═══════════════════════ MÃO EM LEQUE ═══════════════════════ */
-.hand-section { margin: 0; }
 .hand-label { text-align: left; padding-left: 26px; }
 /* encostadas à esquerda, junto do treinador — centralizar abria um vão
    enorme entre ele e a mão. O respiro em cima é o curso da carta no hover
@@ -612,7 +611,6 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 
 /* ═══════════════════════ RESPONSIVO ═══════════════════════ */
 @media (max-width: 900px) {
-  .main-area { grid-template-columns: 1fr; }
   .regions-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -776,11 +774,6 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 
 /* ═══════════════════════ DONO DA MÃO ═══════════════════════ */
 /* o treinador fica à esquerda, ao lado das cartas que ele segura */
-/* treinador, mão e ações alinhados pelo topo */
-.hand-section {
-  margin: 0;
-  display: flex; align-items: flex-start; gap: 6px;
-}
 .hand-player {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
   flex-shrink: 0;
@@ -807,7 +800,6 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 .hand-main { flex: 1; min-width: 0; }
 
 @media (max-width: 720px) {
-  .hand-section { flex-direction: column; align-items: stretch; gap: 4px; }
   .hand-player { flex-direction: row; align-items: center; gap: 12px; }
   /* o tamanho do sprite vem por estilo inline do componente, então só
      !important o alcança para encolher em tela estreita */
@@ -815,31 +807,6 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
   .hand-player-art { width: 87px !important; height: 96px !important; margin-bottom: 0; }
 }
 
-/* ═══════════════════ LAYOUT: REGIÕES NA LATERAL ═══════════════════ */
-/* Mesa e mão no topo da coluna principal; regiões viraram menu lateral.
-   As colunas são definidas só na media query de tela larga, mais abaixo —
-   declarar aqui, solto, sobrescreveria o empilhamento de `max-width: 900px`,
-   que vem antes no arquivo. */
-
-.side-panel {
-  display: flex; flex-direction: column; gap: 12px;
-  min-width: 0;
-}
-
-/* na lateral estreita os cards vão a 2 colunas e ficam compactos */
-.side-panel .regions-grid {
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px; margin-bottom: 0;
-}
-.side-panel .region-banner { aspect-ratio: 5 / 2; }
-.side-panel .region-name {
-  font-size: 0.72rem; padding: 5px 8px; line-height: 1.1;
-}
-.side-panel .region-body { padding: 8px 9px 9px; }
-.side-panel .region-color-name { font-size: 0.6rem; padding: 1px 7px; margin-bottom: 6px; }
-.side-panel .glory-tokens { gap: 4px; margin-bottom: 6px; }
-.side-panel .glory-token { width: 22px; height: 22px; font-size: 0.68rem; }
-.side-panel .marker { width: 11px; height: 11px; }
 
 /* ── registro como botão ── */
 .log-btn {
@@ -862,14 +829,9 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 
 /* ── ações ao lado da mão ── */
 /* sem align-self: as ações seguem o alinhamento pelo topo da seção */
-.hand-actions {
-  flex-shrink: 0; width: 260px;
-}
-.hand-actions .panel-section { padding: 14px; }
 
 @media (max-width: 1200px) {
-  .hand-section { flex-wrap: wrap; }
-  .hand-actions { width: 100%; }
+  .lower { flex-wrap: wrap; }
 }
 
 /* ═══════════════════ ENCAIXE DO BANDO ═══════════════════ */
@@ -909,7 +871,6 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
      align-items:stretch anula o `start` da regra base — sem ele as colunas
      param na altura do conteúdo e nada teria o que rolar. */
   .main-area {
-    grid-template-columns: minmax(0, 1fr) 380px;
     flex: 1; min-height: 0; overflow: hidden; align-items: stretch;
   }
 
@@ -928,24 +889,6 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
   }
   .board-area::-webkit-scrollbar-thumb:hover { background: #B3C6D8; background-clip: padding-box; }
 
-  /* lateral fixa: as regiões dividem a altura disponível entre si */
-  /* overflow visível: as regiões já encolhem para caber na altura, e
-     `hidden` aqui decepava a sombra dos cards nas bordas do painel */
-  .side-panel { min-height: 0; min-width: 0; overflow: visible; }
-  .side-panel .regions-grid {
-    flex: 1; min-height: 0;
-    grid-template-rows: repeat(3, minmax(0, 1fr));
-  }
-  .side-panel .region-card {
-    display: flex; flex-direction: column; min-height: 0;
-  }
-  /* a paisagem absorve a sobra de altura; com background-size:cover ela
-     recorta em vez de distorcer, então encolher é seguro */
-  .side-panel .region-banner {
-    flex: 1; min-height: 44px; aspect-ratio: auto;
-  }
-  .side-panel .region-body { flex-shrink: 0; }
-  .side-panel .section-title { flex-shrink: 0; }
   .log-btn { flex-shrink: 0; }
 }
 
@@ -1034,8 +977,6 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 /* ═══════════ FAIXA ABAIXO DA MÃO: EQUIPES / BANDO ═══════════ */
 /* A coluna à direita do treinador: mão + ações em cima, faixa embaixo.
    É essa faixa que ocupa o vazio que sobrava sob as cartas. */
-.hand-right { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
-.hand-top { display: flex; align-items: flex-start; gap: 6px; }
 
 .band-slot {
   background: var(--panel);
@@ -1079,19 +1020,33 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
   padding: 12px 14px;
   box-shadow: var(--shadow-lg);
   animation: tip-in 0.14s ease-out;
-  max-width: 320px;
+  width: var(--tip-w, 360px);
 }
+/* sem espaço acima, o balão desce e o bico troca de lado */
+.marker-tip.below { transform: translate(-50%, 12px); }
+
 @keyframes tip-in {
-  from { opacity: 0; transform: translate(-50%, calc(-100% - 4px)); }
-  to   { opacity: 1; transform: translate(-50%, calc(-100% - 12px)); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
-/* bico apontando para a bolinha */
+
+/* O bico usa a posição real da bolinha (--seta), e não o centro do balão:
+   quando o balão é empurrado para dentro da janela, os dois deixam de
+   coincidir e um bico centrado apontaria para o lugar errado. */
 .marker-tip::after {
-  content: ''; position: absolute; left: 50%; bottom: -11px;
+  content: ''; position: absolute;
+  left: clamp(18px, var(--seta, 50%), calc(var(--tip-w, 360px) - 18px));
+  bottom: -11px;
   width: 16px; height: 16px; background: var(--panel);
   border-right: 3px solid var(--blue); border-bottom: 3px solid var(--blue);
   transform: translateX(-50%) rotate(45deg);
   border-bottom-right-radius: 4px;
+}
+.marker-tip.below::after {
+  bottom: auto; top: -11px;
+  border: none;
+  border-left: 3px solid var(--blue); border-top: 3px solid var(--blue);
+  border-top-left-radius: 4px;
 }
 
 .marker-tip-who { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
@@ -1102,7 +1057,7 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
 }
 /* cartas em miniatura: aqui elas são registro, como nas equipes */
 .marker-tip-cards {
-  --card-w: 50px; --card-h: 70px;
+  --card-w: 78px; --card-h: 108px;
   display: flex; gap: 4px; flex-wrap: wrap;
 }
 .marker-tip-cards .card { border-width: 2px; border-radius: 8px; box-shadow: none; }
@@ -1119,3 +1074,280 @@ button { font-family: inherit; cursor: pointer; font-weight: 800; }
   .control-markers .marker:hover { transform: none; }
 }
 
+
+/* ═══════════ REGIÕES COMO TABULEIRO ═══════════ */
+/* Seis frentes lado a lado: a linha inteira lê como um front, e não como
+   uma lista. Em tela estreita elas quebram sozinhas. */
+.regions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px; margin-bottom: 14px;
+}
+.region-banner { aspect-ratio: 16 / 9; }
+.region-name {
+  font-size: 0.95rem; padding: 8px 12px;
+}
+/* Números em cima, marcadores embaixo. Em linha única eles disputavam a
+   largura do card e o corpo precisava ser mais alto para caber os dois lado
+   a lado com folga — empilhados, o corpo fica estreito e sobra altura para
+   a paisagem, que é o que dá identidade à frente. */
+.region-body {
+  padding: 8px 10px 9px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+}
+.region-color-name { display: none; }  /* a cor já está na borda e no bioma */
+.glory-tokens { margin-bottom: 0; }
+.control-markers { margin-left: 0; min-height: 13px; }
+
+/* quem domina a frente, sobre a paisagem */
+.region-lead {
+  position: absolute; z-index: 1; top: 8px; right: 8px;
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 999px; padding: 3px 9px 3px 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.region-lead-crown { font-size: 0.8rem; }
+.region-lead-n {
+  font-family: 'Baloo 2', sans-serif; font-weight: 800;
+  font-size: 0.82rem; color: var(--ink);
+}
+.region-free {
+  position: absolute; z-index: 1; top: 8px; right: 8px;
+  background: rgba(255, 255, 255, 0.9); color: var(--ink-soft);
+  font-family: 'Baloo 2', sans-serif; font-weight: 800;
+  font-size: 0.6rem; letter-spacing: 0.12em;
+  padding: 3px 9px; border-radius: 999px;
+}
+
+/* ═══════════ RECRUTAMENTO: FAIXA, NÃO ESTÁDIO ═══════════ */
+/* a mesa passa a ter o tamanho do que carrega — era o campo vazio que
+   fazia a tela parecer inacabada */
+.table-surface { width: fit-content; max-width: 100%; }
+
+
+/* ═══════════ LATERAL FIXA + MESA QUE OCUPA A SOBRA ═══════════ */
+.main-area { grid-template-columns: minmax(0, 1fr) 380px; }
+
+.side-panel {
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 0;
+}
+/* na lateral as seis frentes ficam em 2 colunas x 3 linhas */
+.side-panel .regions-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px; margin-bottom: 0;
+}
+.side-panel .region-name { font-size: 0.78rem; padding: 6px 9px; }
+.side-panel .region-body { padding: 8px 10px 9px; gap: 8px; }
+.side-panel .glory-token { width: 22px; height: 22px; font-size: 0.68rem; }
+.side-panel .region-lead { top: 6px; right: 6px; padding: 2px 7px 2px 5px; gap: 4px; }
+.side-panel .region-lead-crown { font-size: 0.66rem; }
+.side-panel .region-lead-n { font-size: 0.72rem; }
+.side-panel .region-free { top: 6px; right: 6px; font-size: 0.54rem; padding: 2px 7px; }
+
+/* A coluna principal empilha mesa e mão, e é a MESA que absorve a altura
+   que sobra — em vez de deixar um vazio no rodapé. Ela é também quem mais
+   cresce durante a partida: no fim de cada Era todas as mãos caem nela. */
+.board-area { display: flex; flex-direction: column; gap: 12px; }
+.table-section { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.table-stage { flex: 1; min-height: 0; display: flex; }
+.table-surface { width: 100%; height: 100%; }
+/* as cartas se acomodam a partir do topo conforme a mesa enche */
+.table-cards { align-content: flex-start; justify-content: flex-start; }
+
+
+@media (max-width: 1100px) {
+  .main-area { grid-template-columns: minmax(0, 1fr); }
+  .side-panel .regions-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+}
+
+/* ═══════════ TELA LARGA: LATERAL FIXA, NADA ROLA ═══════════ */
+@media (min-width: 901px) {
+  /* a coluna principal deixa de rolar: a mesa absorve a sobra de altura,
+     então não há transbordo para rolar */
+  .board-area { overflow: visible; padding-right: 0; padding-bottom: 0; }
+
+  /* lateral parada, com as seis frentes dividindo a altura da janela */
+  .side-panel { min-height: 0; overflow: visible; }
+  .side-panel .regions-grid {
+    flex: 1; min-height: 0;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+  .side-panel .region-card { display: flex; flex-direction: column; min-height: 0; }
+  /* a paisagem absorve a sobra; com background-size:cover ela recorta em
+     vez de distorcer, então encolher é seguro */
+  .side-panel .region-banner { flex: 1; min-height: 46px; aspect-ratio: auto; }
+  .side-panel .region-body { flex-shrink: 0; }
+  .side-panel .section-title { flex-shrink: 0; }
+}
+
+/* ═══════════ ÁREA DO BANDO: SEMPRE ABERTA ═══════════ */
+/* Agora é ela que absorve a sobra da coluna. A mesa volta a ter a altura do
+   que carrega e cresce sozinha conforme enche; a área do Bando cede espaço
+   até o piso, e só então a coluna rola. */
+.board-area { overflow-y: auto; }
+.table-section { flex: 0 0 auto; }
+
+.band-slot {
+  flex: 1; min-height: 180px;
+  display: flex; flex-direction: column; gap: 10px;
+  margin: 0;
+}
+.band-head {
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.band-label { margin-bottom: 0; }
+.band-head .note { font-size: 0.78rem; }
+
+/* o miolo cresce e as cartas ficam na base, encostadas no rodapé de ações */
+.band-body { flex: 1; min-height: 0; display: flex; align-items: center; }
+.band-body .band-cards { align-items: center; }
+.band-dropzone { width: 100%; height: 100%; min-height: var(--card-h); }
+
+.band-actions {
+  display: flex; gap: 10px; flex-shrink: 0;
+}
+.band-actions .btn-action { flex: 1; }
+.btn-action:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-action.danger:disabled { background: var(--panel-2); color: var(--ink-soft); }
+
+/* a mão não divide mais a linha com o painel de ações, que deixou de existir */
+.hand-main { flex: 1; min-width: 0; }
+
+/* ═══════════ CABER SEM ROLAR ═══════════ */
+/* `flex: 1` só reparte o que sobra: se a soma das alturas naturais já passa
+   da janela, ele não encolhe ninguém e a barra aparece. Aqui a área do
+   Bando pode encolher de verdade (min-height: 0) e, no aperto, quem rola é
+   a fileira de cartas dela — não a coluna inteira. */
+.band-slot { flex: 1 1 auto; min-height: 0; }
+.band-body {
+  flex: 1; min-height: 96px;
+  overflow-y: auto; overflow-x: hidden;
+}
+.band-dropzone { min-height: 0; height: auto; padding: 22px 0; }
+
+/* alturas fixas aparadas para o conjunto caber */
+.table-stage { padding: 4px 26px 8px; }
+.hand-cards { padding-top: 20px; }
+.hand-player { gap: 5px; }
+
+@media (min-width: 901px) {
+  /* Visível, não `hidden`: a área do Bando encolhendo já garante que nada
+     transborda, e `hidden` aqui cortava a sombra da mesa e das cartas rente
+     às bordas da coluna. O `overflow: hidden` do .main-area continua sendo a
+     rede de segurança caso algum dia sobre conteúdo. */
+  .board-area { overflow: visible; }
+}
+
+/* ═══════════ METADE DE BAIXO: TREINADOR EM ALTURA CHEIA ═══════════ */
+/* Uma linha só: o retrato à esquerda ocupando toda a altura disponível, e à
+   direita a mão (com os botões do Bando ao lado) sobre a área de formação. */
+.lower {
+  flex: 1; min-height: 0;
+  display: flex; align-items: stretch; gap: 10px;
+}
+
+/* Largura FIXA: sem ela a coluna não reservava espaço na linha e o retrato,
+   que deriva a largura da altura, transbordava por cima da área do Bando. */
+.hand-player {
+  flex: 0 0 290px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end; gap: 5px;
+  min-height: 0; min-width: 0;
+}
+/* Sem `size` no componente, o tamanho vem daqui. A proporção da célula é
+   obrigatória — o sprite é dimensionado em porcentagem, então qualquer outra
+   proporção distorceria o personagem. `max-height` deixa ele crescer até a
+   altura disponível e encolher junto quando ela aperta. */
+.hand-player-art {
+  width: 100%; height: auto; max-height: 100%;
+  aspect-ratio: 364 / 400;
+  align-self: center;
+}
+
+.lower-right {
+  flex: 1; min-width: 0; min-height: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+/* mão e botões do Bando lado a lado */
+.hand-row {
+  flex: 0 0 auto;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.band-actions {
+  flex: 0 0 auto; width: 230px;
+  display: flex; flex-direction: column; gap: 8px;
+  padding-top: 26px;   /* alinha com as cartas, não com o rótulo da mão */
+}
+.band-actions .btn-action { flex: 0 0 auto; }
+
+/* a área de formação recebe o que sobra depois do retrato e da mão */
+.band-slot { flex: 1 1 auto; min-height: 0; }
+
+/* ═══════════ SEM SOBREPOSIÇÃO NA METADE DE BAIXO ═══════════ */
+/* min-width: 0 nos dois lados da linha: sem isso o mínimo automático do
+   conteúdo empurra um bloco por cima do outro em vez de encolher. */
+/* `min-width: 0` já basta para os blocos encolherem em vez de se
+   empurrarem. `overflow: hidden` aqui decepava a sombra projetada das
+   cartas do leque na borda do contêiner — e cortaria a carta levantada no
+   hover junto. */
+.lower > * { min-width: 0; }
+.lower-right { min-width: 0; }
+.hand-main { min-width: 0; }
+.band-slot { min-width: 0; }
+
+/* o rótulo e o aviso do Bando não competem mais por espaço com as cartas */
+.band-head { min-width: 0; }
+.band-head .note { flex: 1 1 auto; min-width: 0; }
+
+/* ═══════════ BOTÃO SECUNDÁRIO E MODAL DOS BANDOS ═══════════ */
+/* "Ver Bandos" é consulta, não jogada: fica visualmente abaixo dos dois
+   botões que mudam o estado do turno. */
+.btn-action.ghost {
+  background: var(--panel); color: var(--ink-soft);
+  border: 2px solid var(--line);
+  box-shadow: 0 4px 0 var(--line);
+  font-size: 0.86rem;
+}
+.btn-action.ghost:hover { background: var(--panel-2); color: var(--ink); }
+.btn-action.ghost:active { box-shadow: 0 1px 0 var(--line); }
+
+/* cartas em miniatura no modal — registro, não manuseio */
+.team-cards {
+  --card-w: 82px; --card-h: 114px;
+  display: flex; gap: 5px; flex-wrap: wrap;
+}
+.team-cards .card { border-width: 2px; border-radius: 8px; box-shadow: none; }
+.team-cards .card-name-overlay, .team-cards .card-evo-badge { display: none; }
+.team-cards .card-badge { font-size: 0.6rem; padding: 0 3px; }
+.team-cards .card-crown { font-size: 0.72rem; }
+
+/* ═══════════ PAISAGEM MAIS ALTA NA LATERAL ═══════════ */
+/* Com o corpo do card empilhado e enxuto, o piso da paisagem sobe: ela
+   passa a dominar o card, que é o que faz cada frente ser reconhecível de
+   relance. */
+@media (min-width: 901px) {
+  .side-panel .region-banner { min-height: 96px; }
+  .side-panel .region-body { padding: 7px 9px 8px; gap: 5px; }
+  .side-panel .glory-token { width: 21px; height: 21px; font-size: 0.66rem; }
+}
+
+/* ═══════════ RETRATO DE ROSTO ═══════════ */
+/* O quadro é quadrado e o recorte já vem centrado na cabeça, então o
+   arredondamento total cai bem — e é o que faz um retrato de 26px continuar
+   legível onde o corpo inteiro virava mancha. */
+.trainer-face { border-radius: 50%; }
+.avatar-ring .trainer-face { border-radius: 0; }  /* o anel já recorta */
+.ts-avatar.trainer-face {
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--panel), 0 4px 10px rgba(34, 48, 63, 0.28);
+}
+.marker-tip-who .trainer-face {
+  box-shadow: 0 0 0 2px var(--panel), 0 2px 6px rgba(34, 48, 63, 0.25);
+}
+/* no setup o botão mostra o rosto; a grade de escolha segue de corpo
+   inteiro, que é o que se está escolhendo */
+.avatar-btn .trainer-face { border-radius: 0; }

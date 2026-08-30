@@ -24,7 +24,7 @@ export default function TurnSummaryModal({ summary, onEndTurn }) {
       }
     >
       <div className="ts-who">
-        <TrainerAvatar index={summary.playerAvatar} size={96} className="ts-avatar" />
+        <TrainerAvatar index={summary.playerAvatar} size={64} face className="ts-avatar" />
         <span className="ts-name" style={{ '--pcolor': playerColor }}>{playerName}</span>
       </div>
 

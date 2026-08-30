@@ -72,7 +72,7 @@ export default function Setup({ onStart, busy, error }) {
                       title="Trocar aparência"
                       aria-expanded={pickingFor === i}
                     >
-                      <TrainerAvatar index={avatars[i]} size={46} />
+                      <TrainerAvatar index={avatars[i]} size={46} face />
                     </button>
                     <input
                       type="text"
@@ -98,7 +98,7 @@ export default function Setup({ onStart, busy, error }) {
                                 : TRAINER_NAMES[t]
                             }
                           >
-                            <TrainerAvatar index={t} size={58} />
+                            <TrainerAvatar index={t} size={76} />
                             {takenBy !== -1 && takenBy !== i && (
                               <span className="avatar-taken" style={{ background: PLAYER_COLORS[takenBy] }} />
                             )}
